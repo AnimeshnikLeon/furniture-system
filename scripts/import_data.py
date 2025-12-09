@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 from sqlalchemy import create_engine, text
+import time
 
 DB_URL = (
     f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}"
@@ -73,14 +74,34 @@ def import_material_types(conn):
 
 def import_workshops(conn):
     df = read_xlsx(DATA / "Workshops_import.xlsx")
-    df.rename(columns={
-        "Название цеха": "workshop_name",
-        "Тип цеха": "workshop_type",
-        "Количество человек для производства": "workers"
-    }, inplace=True)
+
+    df.columns = [str(c).strip() for c in df.columns]
+
+    col_name = None
+    col_type = None
+    col_workers = None
+    for c in df.columns:
+        if "Название цеха" in c:
+            col_name = c
+        elif "Тип цеха" in c:
+            col_type = c
+        elif "Количество человек" in c:
+            col_workers = c
+
+    if not (col_name and col_type and col_workers):
+        raise RuntimeError(
+            f"Не удалось распознать столбцы в Workshops_import.xlsx. "
+            f"Найдено: {df.columns.tolist()}"
+        )
+
+    df = df.rename(columns={
+        col_name: "workshop_name",
+        col_type: "workshop_type",
+        col_workers: "workers"
+    })
 
     for wt in sorted(df["workshop_type"].dropna().unique()):
-        name = wt.strip()
+        name = str(wt).strip()
         conn.execute(
             text("""
                 INSERT INTO workshop_type (name)
@@ -91,9 +112,10 @@ def import_workshops(conn):
         )
 
     for _, row in df.iterrows():
-        wt_name = row["workshop_type"].strip()
-        ws_name = row["workshop_name"].strip()
-        workers = int(str(row["workers"]).strip())
+        wt_name = str(row["workshop_type"]).strip()
+        ws_name = str(row["workshop_name"]).strip()
+        workers_raw = str(row["workers"]).strip()
+        workers = int(float(workers_raw.replace(",", ".")))
 
         wt_id = conn.execute(
             text("SELECT id FROM workshop_type WHERE name = :name"),
@@ -110,6 +132,7 @@ def import_workshops(conn):
             """),
             {"name": ws_name, "wt_id": wt_id, "workers": workers}
         )
+
 
 
 def import_products(conn):
@@ -194,13 +217,28 @@ def import_product_workshops(conn):
 
 def main():
     print("Connecting to DB:", DB_URL)
+
+    # ждём базу (на случай, если healthcheck чуть опоздает)
+    for attempt in range(10):
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            break
+        except Exception as e:
+            print(f"DB is not ready yet (attempt {attempt + 1}/10): {e}")
+            time.sleep(3)
+    else:
+        raise RuntimeError("Database is still not ready after retries")
+
     with engine.begin() as conn:
         import_product_types(conn)
         import_material_types(conn)
         import_workshops(conn)
         import_products(conn)
         import_product_workshops(conn)
+
     print("Import finished.")
+
 
 
 if __name__ == "__main__":
