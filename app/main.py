@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Request
 from pathlib import Path
@@ -116,7 +117,7 @@ def get_product_workshops(product_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Product not found")
     return product.workshops
 
-@app.get("/", response_class=None)
+@app.get("/", response_class=HTMLResponse)
 def index(request: Request, db: Session = Depends(get_db)):
     products = list_product_cards(db=db)
     return templates.TemplateResponse(
