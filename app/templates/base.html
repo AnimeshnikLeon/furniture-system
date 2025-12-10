@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Продукция компании{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
+<body>
+<header class="app-header">
+    <div class="app-logo">
+        <img src="/static/logo.png" alt="Логотип компании">
+    </div>
+    <div class="app-title">
+        <h1>Подсистема продукции</h1>
+        <span>Мебельная компания</span>
+    </div>
+</header>
+
+<main class="app-main">
+    {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>

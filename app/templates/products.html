@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Список продукции{% endblock %}
+
+{% block content %}
+<h2 class="page-title">Список продукции</h2>
+
+<div class="product-list">
+    {% for p in products %}
+    <article class="product-card">
+        <div class="product-info">
+            <div class="product-name-line">
+                <span class="product-type">{{ p.product_type }}</span>
+                <span class="separator">|</span>
+                <span class="product-name">{{ p.name }}</span>
+            </div>
+            <div class="product-meta">
+                <div>Артикул: <span class="value">{{ p.article }}</span></div>
+                <div>Минимальная стоимость для партнера:
+                    <span class="value">{{ "{:,.2f}".format(p.min_partner_price).replace(",", " ").replace(".", ",") }} ₽</span>
+                </div>
+                <div>Основной материал: <span class="value">{{ p.material_type }}</span></div>
+            </div>
+        </div>
+        <div class="product-time">
+            <div class="time-label">Время изготовления</div>
+            <div class="time-value">{{ p.production_time_hours }} ч</div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% endblock %}

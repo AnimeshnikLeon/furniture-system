@@ -1,5 +1,6 @@
 from decimal import Decimal
 from typing import List, Optional
+from math import ceil
 
 from pydantic import BaseModel
 
@@ -77,4 +78,25 @@ class ProductWorkshopOut(BaseModel):
     production_time_hours: Decimal
 
     class Config:
+        from_attributes = True
+
+class ProductCard(BaseModel):
+
+    id: int
+
+    product_type: str
+
+    name: str
+
+    article: str
+
+    min_partner_price: Decimal
+
+    material_type: str
+
+    production_time_hours: int
+
+
+    class Config:
+
         from_attributes = True
