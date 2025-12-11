@@ -1,6 +1,5 @@
 from decimal import Decimal
-from typing import List, Optional
-from math import ceil
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -31,10 +30,22 @@ class WorkshopTypeOut(BaseModel):
         from_attributes = True
 
 
+# ---------- Workshops ----------
+
 class WorkshopBase(BaseModel):
     name: str
     workshop_type_id: int
     workers_required: int
+
+
+class WorkshopCreate(WorkshopBase):
+    pass
+
+
+class WorkshopUpdate(BaseModel):
+    name: Optional[str] = None
+    workshop_type_id: Optional[int] = None
+    workers_required: Optional[int] = None
 
 
 class WorkshopOut(WorkshopBase):
@@ -44,6 +55,8 @@ class WorkshopOut(WorkshopBase):
     class Config:
         from_attributes = True
 
+
+# ---------- Products ----------
 
 class ProductBase(BaseModel):
     name: str
@@ -73,6 +86,21 @@ class ProductOut(ProductBase):
         from_attributes = True
 
 
+# ---------- Product–Workshop link ----------
+
+class ProductWorkshopBase(BaseModel):
+    workshop_id: int
+    production_time_hours: Decimal
+
+
+class ProductWorkshopCreate(ProductWorkshopBase):
+    pass
+
+
+class ProductWorkshopUpdate(BaseModel):
+    production_time_hours: Optional[Decimal] = None
+
+
 class ProductWorkshopOut(BaseModel):
     workshop: WorkshopOut
     production_time_hours: Decimal
@@ -80,23 +108,17 @@ class ProductWorkshopOut(BaseModel):
     class Config:
         from_attributes = True
 
+
+# ---------- Product card with total time ----------
+
 class ProductCard(BaseModel):
-
     id: int
-
     product_type: str
-
     name: str
-
     article: str
-
     min_partner_price: Decimal
-
     material_type: str
-
     production_time_hours: int
 
-
     class Config:
-
         from_attributes = True
