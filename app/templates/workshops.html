@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Список цехов{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <h2 class="page-title">Цеха</h2>
+    <a href="/ui/workshops/new" class="btn btn-primary">Добавить цех</a>
+</header>
+
+<table class="data-table">
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Тип цеха</th>
+        <th>Требуемое количество сотрудников</th>
+        <th class="column-actions">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for w in workshops %}
+    <tr>
+        <td>{{ w.name }}</td>
+        <td>{{ w.workshop_type.name }}</td>
+        <td class="cell-centered">{{ w.workers_required }}</td>
+        <td class="table-actions">
+            <a href="/ui/workshops/{{ w.id }}/edit" class="link-action">Редактировать</a>
+            <form method="post"
+                  action="/ui/workshops/{{ w.id }}/delete"
+                  class="inline-form"
+                  onsubmit="return confirmDeletion('цех «{{ w.name }}»');">
+                <button type="submit" class="link-action link-danger">
+                    Удалить
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="4" class="table-empty">Список цехов пуст.</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

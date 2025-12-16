@@ -2,30 +2,52 @@
 {% block title %}Список продукции{% endblock %}
 
 {% block content %}
-<h2 class="page-title">Список продукции</h2>
+<header class="page-header">
+    <h2 class="page-title">Продукция</h2>
+    <a href="/ui/products/new" class="btn btn-primary">Добавить продукт</a>
+</header>
 
-<div class="product-list">
+<table class="data-table">
+    <thead>
+    <tr>
+        <th>Тип продукции</th>
+        <th>Наименование</th>
+        <th>Артикул</th>
+        <th>Минимальная стоимость для партнёра</th>
+        <th>Основной материал</th>
+        <th>Время изготовления, ч</th>
+        <th class="column-actions">Действия</th>
+    </tr>
+    </thead>
+    <tbody>
     {% for p in products %}
-    <article class="product-card">
-        <div class="product-info">
-            <div class="product-name-line">
-                <span class="product-type">{{ p.product_type }}</span>
-                <span class="separator">|</span>
-                <span class="product-name">{{ p.name }}</span>
-            </div>
-            <div class="product-meta">
-                <div>Артикул: <span class="value">{{ p.article }}</span></div>
-                <div>Минимальная стоимость для партнера:
-                    <span class="value">{{ "{:,.2f}".format(p.min_partner_price).replace(",", " ").replace(".", ",") }} ₽</span>
-                </div>
-                <div>Основной материал: <span class="value">{{ p.material_type }}</span></div>
-            </div>
-        </div>
-        <div class="product-time">
-            <div class="time-label">Время изготовления</div>
-            <div class="time-value">{{ p.production_time_hours }} ч</div>
-        </div>
-    </article>
+    <tr>
+        <td>{{ p.product_type }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.article }}</td>
+        <td>
+            {{ "{:,.2f}".format(p.min_partner_price).replace(",", " ").replace(".", ",") }} ₽
+        </td>
+        <td>{{ p.material_type }}</td>
+        <td class="cell-centered">{{ p.production_time_hours }}</td>
+        <td class="table-actions">
+            <a href="/ui/products/{{ p.id }}/workshops" class="link-action">Цеха</a>
+            <a href="/ui/products/{{ p.id }}/edit" class="link-action">Редактировать</a>
+            <form method="post"
+                  action="/ui/products/{{ p.id }}/delete"
+                  class="inline-form"
+                  onsubmit="return confirmDeletion('продукт «{{ p.name }}»');">
+                <button type="submit" class="link-action link-danger">
+                    Удалить
+                </button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="7" class="table-empty">В базе пока нет продукции.</td>
+    </tr>
     {% endfor %}
-</div>
+    </tbody>
+</table>
 {% endblock %}

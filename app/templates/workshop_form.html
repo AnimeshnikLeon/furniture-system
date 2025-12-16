@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}
+    {% if is_edit %}Редактирование цеха{% else %}Добавление цеха{% endif %}
+{% endblock %}
+
+{% block content %}
+<h2 class="page-title">
+    {% if is_edit %}Редактирование цеха{% else %}Добавление цеха{% endif %}
+</h2>
+
+<form method="post" action="/ui/workshops/save" class="form-card" novalidate>
+    <input type="hidden" name="id" value="{{ form_data.id or '' }}"/>
+
+    {% if field_errors.__all__ %}
+    <div class="form-error-summary">
+        {{ field_errors.__all__ }}
+    </div>
+    {% endif %}
+
+    <div class="form-row{% if field_errors.name %} has-error{% endif %}">
+        <label for="name">
+            Название цеха <span class="required">*</span>
+        </label>
+        <input id="name"
+               name="name"
+               type="text"
+               maxlength="200"
+               required
+               value="{{ form_data.name or '' }}">
+        <div class="field-help">
+            Уникальное название производственного цеха.
+        </div>
+        {% if field_errors.name %}
+        <div class="field-error">{{ field_errors.name }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-row{% if field_errors.workshop_type_id %} has-error{% endif %}">
+        <label for="workshop_type_id">
+            Тип цеха <span class="required">*</span>
+        </label>
+        <select id="workshop_type_id" name="workshop_type_id" required>
+            <option value="">— Выберите тип —</option>
+            {% for t in workshop_types %}
+            <option value="{{ t.id }}"
+                    {% if form_data.workshop_type_id == t.id %}selected{% endif %}>
+                {{ t.name }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if field_errors.workshop_type_id %}
+        <div class="field-error">{{ field_errors.workshop_type_id }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-row{% if field_errors.workers_required %} has-error{% endif %}">
+        <label for="workers_required">
+            Количество сотрудников <span class="required">*</span>
+        </label>
+        <input id="workers_required"
+               name="workers_required"
+               type="number"
+               min="1"
+               step="1"
+               required
+               value="{{ form_data.workers_required or '' }}">
+        <div class="field-help">
+            Целое положительное число, соответствующее загрузке цеха.
+        </div>
+        {% if field_errors.workers_required %}
+        <div class="field-error">{{ field_errors.workers_required }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-actions">
+        <a href="/ui/workshops" class="btn btn-secondary">Назад к списку</a>
+        <button type="submit" class="btn btn-primary">
+            {% if is_edit %}Сохранить изменения{% else %}Добавить цех{% endif %}
+        </button>
+    </div>
+</form>
+{% endblock %}

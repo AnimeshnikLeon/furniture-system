@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}
+    {% if is_edit %}Редактирование продукции{% else %}Добавление продукции{% endif %}
+{% endblock %}
+
+{% block content %}
+<h2 class="page-title">
+    {% if is_edit %}Редактирование продукции{% else %}Добавление продукции{% endif %}
+</h2>
+
+<form method="post" action="/ui/products/save" class="form-card" novalidate>
+    <input type="hidden" name="id" value="{{ form_data.id or '' }}"/>
+
+    {% if field_errors.__all__ %}
+    <div class="form-error-summary">
+        {{ field_errors.__all__ }}
+    </div>
+    {% endif %}
+
+    <div class="form-row{% if field_errors.article %} has-error{% endif %}">
+        <label for="article">
+            Артикул <span class="required">*</span>
+        </label>
+        <input id="article"
+               name="article"
+               type="text"
+               maxlength="50"
+               required
+               value="{{ form_data.article or '' }}">
+        <div class="field-help">
+            Уникальный код продукции (строка до 50 символов).
+        </div>
+        {% if field_errors.article %}
+        <div class="field-error">{{ field_errors.article }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-row{% if field_errors.product_type_id %} has-error{% endif %}">
+        <label for="product_type_id">
+            Тип продукта <span class="required">*</span>
+        </label>
+        <select id="product_type_id" name="product_type_id" required>
+            <option value="">— Выберите тип —</option>
+            {% for t in product_types %}
+            <option value="{{ t.id }}"
+                    {% if form_data.product_type_id == t.id %}selected{% endif %}>
+                {{ t.name }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if field_errors.product_type_id %}
+        <div class="field-error">{{ field_errors.product_type_id }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-row{% if field_errors.name %} has-error{% endif %}">
+        <label for="name">
+            Наименование <span class="required">*</span>
+        </label>
+        <input id="name"
+               name="name"
+               type="text"
+               maxlength="255"
+               required
+               value="{{ form_data.name or '' }}">
+        <div class="field-help">
+            Полное наименование продукции для отображения в списках.
+        </div>
+        {% if field_errors.name %}
+        <div class="field-error">{{ field_errors.name }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-row{% if field_errors.min_partner_price %} has-error{% endif %}">
+        <label for="min_partner_price">
+            Минимальная стоимость для партнёра, ₽ <span class="required">*</span>
+        </label>
+        <input id="min_partner_price"
+               name="min_partner_price"
+               type="text"
+               inputmode="decimal"
+               pattern="^\d+([.,]\d{1,2})?$"
+               required
+               value="{{ form_data.min_partner_price or '' }}">
+        <div class="field-help">
+            Значение в рублях, неотрицательное, с точностью до сотых (пример: 12500,50).
+        </div>
+        {% if field_errors.min_partner_price %}
+        <div class="field-error">{{ field_errors.min_partner_price }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-row{% if field_errors.material_type_id %} has-error{% endif %}">
+        <label for="material_type_id">
+            Основной материал <span class="required">*</span>
+        </label>
+        <select id="material_type_id" name="material_type_id" required>
+            <option value="">— Выберите материал —</option>
+            {% for m in material_types %}
+            <option value="{{ m.id }}"
+                    {% if form_data.material_type_id == m.id %}selected{% endif %}>
+                {{ m.name }}
+            </option>
+            {% endfor %}
+        </select>
+        {% if field_errors.material_type_id %}
+        <div class="field-error">{{ field_errors.material_type_id }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-actions">
+        <a href="/ui/products" class="btn btn-secondary">Назад к списку</a>
+        <button type="submit" class="btn btn-primary">
+            {% if is_edit %}Сохранить изменения{% else %}Добавить продукт{% endif %}
+        </button>
+    </div>
+</form>
+{% endblock %}

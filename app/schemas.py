@@ -122,3 +122,17 @@ class ProductCard(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ---------- Raw material calculation ----------
+
+class RawMaterialCalcRequest(BaseModel):
+    product_type_id: int
+    material_type_id: int
+    quantity: int
+    param1: float
+    param2: float
+
+
+class RawMaterialCalcResult(BaseModel):
+    result: int

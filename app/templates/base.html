@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Продукция компании{% endblock %}</title>
+    <title>{% block title %}Подсистема продукции{% endblock %}</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
 </head>
@@ -12,14 +12,55 @@
         <img src="/static/logo.png" alt="Логотип компании">
     </div>
     <div class="app-title">
-        <h1>Подсистема продукции</h1>
-        <span>Мебельная компания</span>
+        <h1>Мебельная компания</h1>
+        <span>Подсистема работы с продукцией</span>
     </div>
 </header>
 
-<main class="app-main">
-    {% block content %}{% endblock %}
-</main>
+<div class="app-layout">
+    <aside class="app-sidebar">
+        <nav class="sidebar-nav" aria-label="Главное меню">
+            <a href="/ui/products"
+               class="nav-link{% if active_page == 'products' %} nav-link-active{% endif %}">
+                Продукция
+            </a>
+            <a href="/ui/workshops"
+               class="nav-link{% if active_page == 'workshops' %} nav-link-active{% endif %}">
+                Цеха
+            </a>
+        </nav>
+    </aside>
 
+    <main class="app-main">
+        {% if messages %}
+        <section class="alert-container" aria-live="polite">
+            {% for msg in messages %}
+            <div class="alert alert-{{ msg.type }}">
+                <div class="alert-icon" aria-hidden="true"></div>
+                <div class="alert-body">
+                    <div class="alert-title">{{ msg.title }}</div>
+                    <div class="alert-text">{{ msg.text }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<footer class="app-footer">
+    <span>© 2006–2025 Мебельная компания</span>
+</footer>
+
+<script>
+    // Предупреждение пользователя об удалении записей.
+    function confirmDeletion(entityDescription) {
+        const text = "Вы действительно хотите удалить " + entityDescription + "?\n"
+            + "Операция необратима.";
+        return window.confirm(text);
+    }
+</script>
 </body>
 </html>

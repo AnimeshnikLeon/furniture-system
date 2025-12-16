@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Цеха для продукции {{ product.name }}{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <h2 class="page-title">
+        Цеха для продукции «{{ product.name }}»
+    </h2>
+    <a href="/ui/products" class="btn btn-secondary">Назад к продукции</a>
+</header>
+
+<section class="form-card" style="margin-bottom: 20px;">
+    <div class="product-name-line">
+        {{ product.product_type.name }} | {{ product.name }}
+    </div>
+    <div class="product-meta">
+        Артикул:
+        <span class="value">{{ product.article }}</span>
+        <span class="separator">|</span>
+        Минимальная стоимость для партнёра:
+        <span class="value">
+            {{ "{:,.2f}".format(product.min_partner_price).replace(",", " ").replace(".", ",") }} ₽
+        </span>
+        <br>
+        Основной материал:
+        <span class="value">{{ product.material_type.name }}</span>
+        <span class="separator">|</span>
+        Суммарное время изготовления:
+        <span class="value">{{ total_hours }} ч</span>
+    </div>
+</section>
+
+<table class="data-table">
+    <thead>
+    <tr>
+        <th>Название цеха</th>
+        <th>Тип цеха</th>
+        <th>Требуемое количество сотрудников</th>
+        <th>Время в цехе, ч</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for link in links %}
+    <tr>
+        <td>{{ link.workshop.name }}</td>
+        <td>{{ link.workshop.workshop_type.name }}</td>
+        <td class="cell-centered">{{ link.workshop.workers_required }}</td>
+        <td class="cell-centered">
+            {{ "{:,.2f}".format(link.production_time_hours).replace(",", " ").replace(".", ",") }}
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="4" class="table-empty">
+            Для этой продукции ещё не настроены цеха изготовления.
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    {% if links %}
+    <tfoot>
+    <tr>
+        <td colspan="3" style="text-align: right; font-weight: 600;">
+            Суммарное время по всем цехам, ч:
+        </td>
+        <td class="cell-centered" style="font-weight: 600;">
+            {{ total_hours }}
+        </td>
+    </tr>
+    </tfoot>
+    {% endif %}
+</table>
+{% endblock %}
+
